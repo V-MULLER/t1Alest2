@@ -1,5 +1,5 @@
 
-public class Papel {
+public class Papel implements Comparable<Papel>{
 	
 	private Character tipo;
 	private Integer quantidade;
@@ -40,5 +40,16 @@ public class Papel {
 	@Override
 	public String toString() {
 		return "Papel [tipo=" + tipo + ", quantidade=" + quantidade + ", preco=" + preco + "]";
+	}
+
+	@Override
+	public int compareTo(Papel outroPapel) {
+		if(this.preco > outroPapel.getPreco()) {
+			return -1;
+		}
+		if(this.preco < outroPapel.getPreco()) {
+			return 1;
+		}
+		return 0;
 	}
 }
