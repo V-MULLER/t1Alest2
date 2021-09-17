@@ -20,7 +20,7 @@ public class LeituraDeArquivo {
 			while (line != null) {
 				String[] fields = line.split(" ");
 				//List<String> fields = Arrays.asList(vect);
-				Character tipo = fields[0].charAt(0);
+				String tipo = fields[0];
 				Integer quantidade = Integer.parseInt(fields[1]);
 				Integer preco = Integer.parseInt(fields[2]);
 

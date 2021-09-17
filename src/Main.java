@@ -7,126 +7,109 @@ public class Main {
 	public static void main(String[] args) {
 		LeituraDeArquivo arquivo = new LeituraDeArquivo();
 
-		
-		
 		double lucroTotal = 0;
 		int comprasRestantes = 0;
 		int vendasRestantes = 0;
-		
-		List<Papel> compras = retornaListaDeCompras(arquivo.getPapeis());
-		List<Papel> vendas = retornaListaDeVendas(arquivo.getPapeis());
-		
-		test(arquivo);
-	
-		
-	}
-
-	public static Integer calculaQuantidade(Papel p1, Papel p2) {
-		int qtd = p1.getQuantidade() - p2.getQuantidade();
-		if (qtd < 0) {
-			return 0;
-		}
-		return qtd;
-	}
-	
-	public static List<Papel> retornaListaDeCompras(List<Papel> listaGeral){
-		List<Papel> listaDeCompras = new ArrayList<>();
-		for(Papel obj : listaGeral) {
-			if (obj.getTipo() == 'c') {
-				listaDeCompras.add(obj);
-			}
-		}
-		Collections.sort(listaDeCompras);
-		return listaDeCompras;
-	}
-	
-	public static List<Papel> retornaListaDeVendas(List<Papel> listaGeral){
-		List<Papel> listaDeVendas = new ArrayList<>();
-		for(Papel obj : listaGeral) {
-			if (obj.getTipo() == 'v') {
-				listaDeVendas.add(obj);
-			}
-		}
-		Collections.sort(listaDeVendas);
-		return listaDeVendas;
-	}
-	
-	/*public static String calculaCompraEVenda(List<Papel> listaDeCompra, List<Papel> listaDeVenda) {
-		for(int i = 0; i < listaDeCompra.size(); i++) {
-			for(int j = listaDeVenda.size(); j >= listaDeVenda.size(); j--) {
-				int precoCompra = listaDeCompra.get(i).getPreco();
-				int qtdCompra = listaDeCompra.get(i).getQuantidade();
-				int precoVenda = listaDeVenda.get(j).getPreco();
-				int qtdVenda = listaDeVenda.get(j).getQuantidade();
-				if()
-			}
-		}
-		
-		return null; 
-	}*/
-	
-	public static void test(LeituraDeArquivo arquivo) {
 		arquivo.leArquivo(Paths.get("trinta_enunciado.txt"));
 		
-		double lucroTotal = 0;
+		
+		
+		/*for(Papel obj : arquivo.getPapeis()) {
+			System.out.printf("%d\n",obj.getPreco());
+		}*/
+		
+
+		test2(arquivo);
+
+	}
+
+	
+	public static double calculaVenda(Papel venda, Papel compra) {
+		double lucroDaOperacao = 0.0;
+		//o valor é maior ou igual o da venda
+		if(venda.getPreco() <= compra.getPreco() && compra.getQuantidade() > 0) {
+			//se quantidade do estoque de venda é maior que o de compra
+			if(venda.getQuantidade() - compra.getQuantidade() > 0) {
+				//multiplica o valor da diferença pela quantidade do estoque de compra que foi zerado
+				lucroDaOperacao = (compra.getPreco() - venda.getPreco()) * compra.getQuantidade();
+				//seta o estoque de venda, como é maior que o de compra vai ser >0
+				venda.setQuantidade(venda.getQuantidade() - compra.getQuantidade());
+				//seta em zero já que a diferença ia dar negativo
+				compra.setQuantidade(0);
+				return lucroDaOperacao;
+			}
+			//se quantidade do estoque de venda é menor que o de compra
+			else {
+				//multiplica o valor da diferença pela quantidade do estoque de venda que foi zerado
+				lucroDaOperacao = (compra.getPreco() - venda.getPreco()) * venda.getQuantidade();
+				venda.setQuantidade(0);
+				compra.setQuantidade(compra.getQuantidade() - venda.getQuantidade());
+				return lucroDaOperacao;
+			}
+		}
+		return lucroDaOperacao;
+	}
+	
+	public static double calculaCompra(Papel compra, Papel venda) {
+		double lucroDaOperacao = 0.0;
+		//o valor de venda ou igual o de compra
+		if(compra.getPreco() >= venda.getPreco() && venda.getQuantidade() > 0) {
+			//se a quantidade do estoque de compra é maior que o de venda
+			if(compra.getQuantidade() - venda.getQuantidade() > 0) {
+				//multiplica a diferença pelo estoque de venda que vai ser zerado
+				lucroDaOperacao = (compra.getPreco() - venda.getPreco()) * venda.getQuantidade();
+				//seta o estoque de compra, como o estoque de venda é maior vai ser >0
+				compra.setQuantidade(compra.getQuantidade() - venda.getQuantidade());
+				//seta em zero pra não ficar negativo
+				venda.setQuantidade(0);
+				return lucroDaOperacao;
+			}
+			//se a quantidade do estoque de compra é menor que o de venda
+			else {
+				//multiplica a diferença pelo estoque de compra que vai ser zerado
+				lucroDaOperacao = (compra.getPreco() - venda.getPreco()) * compra.getQuantidade();
+				//seta o estoque de venda, como o estoque de venda é maior vai ser >0
+				venda.setQuantidade(venda.getQuantidade() - compra.getQuantidade());
+				//seta em 0 para não ficar negativo
+				compra.setQuantidade(0);
+				return lucroDaOperacao;
+			}
+		}
+		return lucroDaOperacao;
+	}
+
+
+	public static void test2(LeituraDeArquivo arquivo) {
+		arquivo.leArquivo(Paths.get("trinta_enunciado.txt"));
+		double lucroTotalVenda = 0.0;
+		double lucroTotalCompra = 0.0;
 		int comprasRestantes = 0;
 		int vendasRestantes = 0;
-
+		//Collections.sort(arquivo.getPapeis());
+		
 		for (int i = 0; i < arquivo.getPapeis().size(); i++) {
-			if (arquivo.getPapeis().get(i).getTipo() == 'c') {
-				for (int j = arquivo.getPapeis().size(); j > arquivo.getPapeis().size() - i; j--) {
+			for(int j = i + 1; j < arquivo.getPapeis().size(); j++) {
+				//SE COMPRA E VENDA e tiver estoque
+				if(arquivo.getPapeis().get(i).getTipo().equals("C") && arquivo.getPapeis().get(j).getTipo().equals("V")
+						&&(arquivo.getPapeis().get(i).getQuantidade() != 0 || arquivo.getPapeis().get(j).getQuantidade() != 0)) {
 					
-					int precoCompra = arquivo.getPapeis().get(i).getPreco();
-					int qtdCompra = arquivo.getPapeis().get(i).getQuantidade();
-					int precoVenda = arquivo.getPapeis().get(j).getPreco();
-					int qtdVenda = arquivo.getPapeis().get(j).getQuantidade();
-					
-					if ((arquivo.getPapeis().get(j).getTipo() == 'v' && (precoCompra <= arquivo.getPapeis().get(j).getPreco() && arquivo.getPapeis().get(j).getQuantidade() > 0)) 
-							|| qtdCompra > 0) {
-						
-						lucroTotal += (precoCompra - precoVenda) * qtdCompra;
-						arquivo.getPapeis().get(i).setQuantidade(
-								calculaQuantidade(arquivo.getPapeis().get(i), arquivo.getPapeis().get(j)));
-						arquivo.getPapeis().get(j).setQuantidade(
-								calculaQuantidade(arquivo.getPapeis().get(j), arquivo.getPapeis().get(i)));
-					}
-					else {
-						//if(qtdVenda == 0) {
-							//arquivo.getPapeis().remove(j);
-						//}
-						
-						continue;
-					}
+					lucroTotalCompra += calculaCompra(arquivo.getPapeis().get(i), arquivo.getPapeis().get(j));
+					System.out.println("compra: " + lucroTotalCompra);
 				}
-			}
-			//se for venda
-			else {
-				for (int j = 0; j < i; j++) {
-					int precoCompra = arquivo.getPapeis().get(j).getPreco();
-					int qtdCompra = arquivo.getPapeis().get(j).getQuantidade();
-					int precoVenda = arquivo.getPapeis().get(i).getPreco();
-					int qtdVenda = arquivo.getPapeis().get(i).getQuantidade();
+				//SE VENDA E COMPRA e tiver estoque
+				else if(arquivo.getPapeis().get(i).getTipo().equals("V") && arquivo.getPapeis().get(j).getTipo().equals("C")
+						&&(arquivo.getPapeis().get(i).getQuantidade() != 0 || arquivo.getPapeis().get(j).getQuantidade() != 0)) {
 					
-					if ((arquivo.getPapeis().get(j).getTipo() == 'c' && (precoVenda >= precoCompra && qtdCompra > 0)) || qtdVenda > 0) {
-						
-						lucroTotal += (precoVenda - precoCompra) * qtdVenda;
-						arquivo.getPapeis().get(i).setQuantidade(
-								calculaQuantidade(arquivo.getPapeis().get(i), arquivo.getPapeis().get(j)));
-						arquivo.getPapeis().get(j).setQuantidade(
-								calculaQuantidade(arquivo.getPapeis().get(i), arquivo.getPapeis().get(j)));
-					}
-					else {
-						//if(qtdCompra == 0) {
-							//arquivo.getPapeis().remove(j);
-						//}
-						
-						continue;
-					}
+					lucroTotalVenda += calculaVenda(arquivo.getPapeis().get(i), arquivo.getPapeis().get(j));
+					System.out.println("venda: " + lucroTotalVenda);
+				}
+				//se nenhuma
+				else {
+					continue;
 				}
 			}
 		}
-		
-		System.out.println(lucroTotal);
-	 }
-	 
+		System.out.println(lucroTotalCompra + lucroTotalVenda);
+	}
+	
 }

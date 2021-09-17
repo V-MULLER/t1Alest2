@@ -1,23 +1,23 @@
 
 public class Papel implements Comparable<Papel>{
 	
-	private Character tipo;
+	private String tipo;
 	private Integer quantidade;
 	private Integer preco;
 	
 	public Papel() {}
 
-	public Papel(Character tipo, Integer quantidade, Integer preco) {
+	public Papel(String tipo, Integer quantidade, Integer preco) {
 		this.tipo = tipo;
 		this.quantidade = quantidade;
 		this.preco = preco;
 	}
 
-	public Character getTipo() {
+	public String getTipo() {
 		return tipo;
 	}
 
-	public void setTipo(Character tipo) {
+	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
 
